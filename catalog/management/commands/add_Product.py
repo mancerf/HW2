@@ -1,26 +1,26 @@
 from django.core.management.base import BaseCommand
-from catalog.models import Product, Category
+from django.core.management import call_command
+from catalog.models import Category, Product
 
 
 class Command(BaseCommand):
-    help = 'Add test Product to the database'
-    Product.objects.all().delete()
-    Category.objects.all().delete()
+    help = 'Add test products to the database'
 
-    def handle(self, *args, **kwargs):
-        group, _ = Category.objects.get_or_create(name='животные')
+    def handle(self, *args, **options):
+        Category.objects.all().delete()
+        Product.objects.all().delete()
+
+        category, _ = Category.objects.get_or_create(name='Настольные игры', description='Игры для компании')
 
         products = [
-            {'name' = 'тигр', 'description' = 'рыжий', 'сategory_item' = 'животное', 'price' = '100'},
-            {'name' = 'лось', 'description' = 'рогатый', 'сategory_item' = 'животное','price' = '1000'},
-            {'name' = 'машина', 'description' = 'красная', 'сategory_item' = 'машина','price' = '100000'}
+            {'name': 'Монополия', 'description': 'Игра связонной с экономикой для компании',
+             'image': '', 'price': 1500, 'category': category},
+            {'name': 'Мафия', 'description': 'Игра для компании', 'image': '',
+             'price': 500, 'category': category}
         ]
-
-        for product_data in products:
-            product, created = Product.objects.get_or_create(**product_data)
+        for product_in_data in products:
+            product, created = Product.objects.get_or_create(**product_in_data)
             if created:
-                self.stdout.write(
-                    self.style.SUCCESS(f'Successfully added product: {Product.name} {Product.сategory_item}'))
+                self.stdout.write(self.style.SUCCESS(f'Successfully added book: {product.name}'))
             else:
-                self.stdout.write(
-                    self.style.WARNING(f'product already exists: {Product.name} {Product.сategory_item}'))
+                self.stdout.write(self.style.WARNING(f'Book already exists: {product.name}'))

@@ -7,9 +7,12 @@ from .models import Category, Product
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ['id', 'name']
+    search_fields = ('name', 'description',)
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'price', 'сategory_item')
-    list_filter = ('сategory_item',)
-    search_fields = ('name','description')
+    list_display = ['id', 'name', 'price', 'category']
+    list_filter = ('category',)
+    search_fields = ('name', 'description',)
