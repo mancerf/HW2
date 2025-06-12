@@ -1,5 +1,6 @@
 from blog.models import Blog
 from django.shortcuts import render, get_object_or_404
+from .forms import BlogForm
 
 from django.views.generic import (
     ListView,
@@ -33,15 +34,15 @@ class BlogDetailView(DetailView):
 
 class BlogCreateView(CreateView):
     model = Blog
+    form_class = BlogForm
     template_name = "blog/blog_form.html"
-    fields = ("title", "content", "preview")
     success_url = reverse_lazy("blog:blog_list")
 
 
 class BlogUpdateView(UpdateView):
     model = Blog
+    form_class = BlogForm
     template_name = "blog/blog_form.html"
-    fields = ("title", "content", "preview")
     success_url = reverse_lazy("blog:blog_list")
 
     def get_success_url(self):
