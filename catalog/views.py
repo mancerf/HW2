@@ -1,6 +1,7 @@
 from catalog.models import Product
 from django.shortcuts import render, get_object_or_404
 from .forms import ProductForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import (
     ListView,
@@ -50,14 +51,14 @@ class ProductDetailView(DetailView):
     template_name = "catalog/product_detail.html"
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:product_list")
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
@@ -67,6 +68,6 @@ class ProductUpdateView(UpdateView):
         return reverse("catalog:product_detail", args=[self.kwargs.get("pk")])
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy("catalog:product_list")
