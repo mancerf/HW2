@@ -10,6 +10,7 @@
 Рекомендуется использовать PyCharm
 
 Ссылка для добавления проекта
+В директории config в файле setting.py нужно указать свой адресс и пароль EMAIL_HOST_USER = 'Youemail@yandex.ru' EMAIL_HOST_PASSWORD = 'your_password'
 
 
 Для создания виртуального окружения и установки зависимостей используйте pip
