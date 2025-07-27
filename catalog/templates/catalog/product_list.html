@@ -13,11 +13,15 @@
                             <div>
                                 <a class="btn btn-primary me-2" href="{% url 'catalog:product_detail'  product.pk %}"
                                    role="button">Посмотреть</a>
-                                <a class="btn btn-primary" href="{% url 'catalog:product_update'  product.pk %}" role="button">Редактировать</a>
+                                    {% if 'catalog.can_unpublish_product' in perms or user == product.owner %}
+                                        <a class="btn btn-primary" href="{% url 'catalog:product_update'  product.pk %}" role="button">Редактировать</a>
+                                    {% endif %}
                             </div>
-                            <a class="btn btn-danger" href="{% url 'catalog:product_delete' product.pk %}"
-                               role="button">Удалить</a>
-                            <small class="text-body-secondary">9 mins</small></div>
+                            {% if 'catalog.can_unpublish_product' in perms or user == product.owner %}
+                                <a class="btn btn-danger" href="{% url 'catalog:product_delete' product.pk %}"
+                                   role="button">Удалить</a>
+                                <small class="text-body-secondary">9 mins</small></div>
+                            {% endif %}
                     </div>
                 </div>
             </div>
