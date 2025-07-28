@@ -91,3 +91,9 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy("catalog:product_list")
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if (self.object.owner != request.user) or not request.user.has_perm("catalog.delete_product"):
+            raise PermissionDenied("You do not have permission to delete this product.")
+        return super().delete(request, *args, **kwargs)
