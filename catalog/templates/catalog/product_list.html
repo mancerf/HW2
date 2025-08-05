@@ -1,27 +1,45 @@
 {% extends 'catalog/base.html' %}
 {% load my_tags %}
+
 {% block content %}
+<div class="mb-3">
+    <form method="GET" action="{% url 'catalog:product_list' %}">
+        <label for="category-select">Выберите категорию:</label>
+        <select id="category-select" name="category_name">
+            <option value="">Все категории</option>
+            {% for cat in categories %}
+            <option value="{{cat.name}}" {% if request.GET.category_name == cat.name %} selected{% endif %}>
+                {{cat.name}}
+            </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Показать">
+    </form>
+</div>
+
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            {% for product in object_list%}
+            {% for product in products %}
             <div class="col">
                 <div class="card shadow-sm">
                     <img src="{{product.image | media_filter}}">
                     <div class="card-body"><p class="card-text">{{product.name }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <a class="btn btn-primary me-2" href="{% url 'catalog:product_detail'  product.pk %}"
+                                <a class="btn btn-primary me-2" href="{% url 'catalog:product_detail' product.pk %}"
                                    role="button">Посмотреть</a>
-                                    {% if 'catalog.can_unpublish_product' in perms or user == product.owner %}
-                                        <a class="btn btn-primary" href="{% url 'catalog:product_update'  product.pk %}" role="button">Редактировать</a>
-                                    {% endif %}
+                                {% if 'catalog.can_unpublish_product' in perms or user == product.owner %}
+                                <a class="btn btn-primary" href="{% url 'catalog:product_update' product.pk %}"
+                                   role="button">Редактировать</a>
+                                {% endif %}
                             </div>
                             {% if 'catalog.can_unpublish_product' in perms or user == product.owner %}
-                                <a class="btn btn-danger" href="{% url 'catalog:product_delete' product.pk %}"
-                                   role="button">Удалить</a>
-                                <small class="text-body-secondary">9 mins</small></div>
+                            <a class="btn btn-danger" href="{% url 'catalog:product_delete' product.pk %}"
+                               role="button">Удалить</a>
+                            <small class="text-body-secondary">9 мин</small>
                             {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -29,7 +47,8 @@
         </div>
     </div>
 </div>
+
 <div class="fixed-bottom d-flex justify-content-center mb-3">
-    <a class="btn btn-primary btn-lg shadow" href="{% url 'catalog:product_create' %}" role="button">Создать пост</a>
+    <a class="btn btn-primary btn-lg shadow" href="{% url 'catalog:product_create' %}" role="button">Создать продукт</a>
 </div>
 {% endblock %}

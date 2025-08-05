@@ -1,10 +1,11 @@
 from django.core.exceptions import PermissionDenied
 
-from catalog.models import Product
+from catalog.models import Product, Category
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import ProductForm, ProductModeratorForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
+from catalog.services import get_product_from_cache, get_products_by_category
 
 from django.views.generic import (
     ListView,
@@ -46,7 +47,15 @@ class ProductListView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        return Product.objects.filter(price__gt=0).order_by('price')
+        category_name = self.request.GET.get('category_name')
+        if category_name:
+            return Product.objects.filter(category__name=category_name)
+        return Product.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
 
 
 class ProductDetailView(DetailView):
@@ -59,6 +68,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     form_class = ProductForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:product_list")
+
     def form_valid(self, form):
         product = form.save()
         user = self.request.user
@@ -97,3 +107,21 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         if (self.object.owner != request.user) or not request.user.has_perm("catalog.delete_product"):
             raise PermissionDenied("You do not have permission to delete this product.")
         return super().delete(request, *args, **kwargs)
+
+
+class ProductListByCategoryView(ListView):
+    model = Product
+    template_name = "catalog/product_list_by_category.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        category_name = self.kwargs.get('category_name')
+        if category_name:
+            return Product.objects.filter(category__name=category_name)
+        return Product.objects.all()  # Если категория не выбрана, выводим все товары
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_category'] = Category.objects.get(name=self.kwargs.get('category_name')) if self.kwargs.get(
+            'category_name') else None
+        return context
