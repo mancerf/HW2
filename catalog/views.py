@@ -48,13 +48,11 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         category_name = self.request.GET.get('category_name')
-        if category_name:
-            return Product.objects.filter(category__name=category_name)
-        return Product.objects.all()
+        return get_product_from_cache(category_name)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()
+        context['categories'] = Category.objects.all()  # Добавляем список категорий в контекст
         return context
 
 
@@ -115,10 +113,11 @@ class ProductListByCategoryView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        category_name = self.kwargs.get('category_name')
-        if category_name:
-            return Product.objects.filter(category__name=category_name)
-        return Product.objects.all()  # Если категория не выбрана, выводим все товары
+
+            category_name = self.kwargs.get('category_name')
+            if category_name:
+                return Product.objects.filter(category__name=category_name)
+            return Product.objects.all()  # Если категория не выбрана, выводим все товары
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
